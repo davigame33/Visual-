@@ -1,0 +1,660 @@
+--// DV HUB PREMIUM
+--// COMPLETO: BOX (com cor), VER PLAY 😈, ESPLINHA (com cor), ESQUELETO (com cor), matar 😈
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "DV_HUB"
+gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = player:WaitForChild("PlayerGui")
+
+--==================================================
+-- BOTÃO FLUTUANTE
+--==================================================
+
+local button = Instance.new("TextButton")
+button.Name = "Visual"
+button.Size = UDim2.fromOffset(92,34)
+button.Position = UDim2.new(0.5,-46,0,15)
+button.BackgroundColor3 = Color3.fromRGB(25,25,30)
+button.BorderSizePixel = 0
+button.Text = "VISUAL"
+button.TextColor3 = Color3.fromRGB(255,255,255)
+button.TextSize = 11
+button.Font = Enum.Font.GothamBold
+button.AutoButtonColor = false
+button.ZIndex = 20
+button.Parent = gui
+
+local bc = Instance.new("UICorner")
+bc.CornerRadius = UDim.new(0,8)
+bc.Parent = button
+
+local bs = Instance.new("UIStroke")
+bs.Color = Color3.fromRGB(210,35,50)
+bs.Thickness = 1.5
+bs.Parent = button
+
+--==================================================
+-- FRAME PRINCIPAL
+--==================================================
+
+local frame = Instance.new("Frame")
+frame.Name = "DVHub"
+frame.Size = UDim2.fromOffset(215,285)
+frame.Position = UDim2.new(0.5,-107,0,60)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,24)
+frame.BorderSizePixel = 0
+frame.Visible = false
+frame.ZIndex = 10
+frame.Parent = gui
+
+local fc = Instance.new("UICorner")
+fc.CornerRadius = UDim.new(0,12)
+fc.Parent = frame
+
+local fs = Instance.new("UIStroke")
+fs.Color = Color3.fromRGB(190,35,48)
+fs.Thickness = 1.5
+fs.Parent = frame
+
+--==================================================
+-- CABEÇALHO
+--==================================================
+
+local header = Instance.new("Frame")
+header.Name = "ArrastarAqui"
+header.Size = UDim2.new(1,0,0,38)
+header.BackgroundColor3 = Color3.fromRGB(35,35,40)
+header.BorderSizePixel = 0
+header.ZIndex = 11
+header.Parent = frame
+
+local hc = Instance.new("UICorner")
+hc.CornerRadius = UDim.new(0,12)
+hc.Parent = header
+
+local fix = Instance.new("Frame")
+fix.Size = UDim2.new(1,0,0,12)
+fix.Position = UDim2.new(0,0,1,-12)
+fix.BackgroundColor3 = Color3.fromRGB(35,35,40)
+fix.BorderSizePixel = 0
+fix.ZIndex = 11
+fix.Parent = header
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1,-30,1,0)
+title.Position = UDim2.fromOffset(15,0)
+title.BackgroundTransparency = 1
+title.Text = "DV HUB"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.TextSize = 14
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.ZIndex = 12
+title.Parent = header
+
+--==================================================
+-- VARIÁVEIS DE ESTADO E CORES
+--==================================================
+
+local boxEnabled = false
+local verPlayEnabled = false
+local linhaEnabled = false
+local esqueletoEnabled = false
+local matarEnabled = false
+
+local boxColor = Color3.fromRGB(220, 35, 50)
+local linhaColor = Color3.fromRGB(220, 35, 50)
+local esqueletoColor = Color3.fromRGB(220, 35, 50)
+
+--==================================================
+-- FUNÇÕES PARA CRIAR BOTÕES (COM E SEM PALETA)
+--==================================================
+
+local function criarToggleComCor(posY, nomeTexto, callbackToggle, corAtualCallback, mudarCorCallback)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -55, 0, 26)
+	btn.Position = UDim2.fromOffset(15, posY)
+	btn.BackgroundColor3 = Color3.fromRGB(28,28,34)
+	btn.BorderSizePixel = 0
+	btn.Text = "  " .. nomeTexto .. ": OFF"
+	btn.TextColor3 = Color3.fromRGB(180,180,185)
+	btn.TextSize = 9
+	btn.Font = Enum.Font.GothamBold
+	btn.TextXAlignment = Enum.TextXAlignment.Left
+	btn.ZIndex = 11
+	btn.Parent = frame
+
+	local c1 = Instance.new("UICorner")
+	c1.CornerRadius = UDim.new(0,6)
+	c1.Parent = btn
+
+	local s1 = Instance.new("UIStroke")
+	s1.Color = Color3.fromRGB(60,60,65)
+	s1.Thickness = 1
+	s1.Parent = btn
+
+	local colorBtn = Instance.new("TextButton")
+	colorBtn.Size = UDim2.fromOffset(26,26)
+	colorBtn.Position = UDim2.new(1, -34, 0, posY)
+	colorBtn.BackgroundColor3 = corAtualCallback()
+	colorBtn.BorderSizePixel = 0
+	colorBtn.Text = ""
+	colorBtn.ZIndex = 11
+	colorBtn.Parent = frame
+
+	local c2 = Instance.new("UICorner")
+	c2.CornerRadius = UDim.new(0,6)
+	c2.Parent = colorBtn
+
+	local s2 = Instance.new("UIStroke")
+	s2.Color = Color3.fromRGB(90,90,95)
+	s2.Thickness = 1
+	s2.Parent = colorBtn
+
+	local colorPalette = Instance.new("Frame")
+	colorPalette.Size = UDim2.fromOffset(175, 28)
+	colorPalette.Position = UDim2.new(0, 15, 0, posY + 30)
+	colorPalette.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+	colorPalette.BorderSizePixel = 0
+	colorPalette.Visible = false
+	colorPalette.ZIndex = 30
+	colorPalette.Parent = frame
+
+	local c3 = Instance.new("UICorner")
+	c3.CornerRadius = UDim.new(0,6)
+	c3.Parent = colorPalette
+
+	local s3 = Instance.new("UIStroke")
+	s3.Color = Color3.fromRGB(80,80,90)
+	s3.Thickness = 1
+	s3.Parent = colorPalette
+
+	local coresDisponiveis = {
+		Color3.fromRGB(220, 35, 50),
+		Color3.fromRGB(0, 255, 100),
+		Color3.fromRGB(0, 150, 255),
+		Color3.fromRGB(255, 165, 0),
+		Color3.fromRGB(255, 255, 0),
+		Color3.fromRGB(200, 50, 255),
+		Color3.fromRGB(255, 255, 255)
+	}
+
+	for i, cor in ipairs(coresDisponiveis) do
+		local cBox = Instance.new("TextButton")
+		cBox.Size = UDim2.fromOffset(18, 18)
+		cBox.Position = UDim2.fromOffset(5 + (i - 1) * 23, 5)
+		cBox.BackgroundColor3 = cor
+		cBox.BorderSizePixel = 0
+		cBox.Text = ""
+		cBox.ZIndex = 31
+		cBox.Parent = colorPalette
+
+		local cc = Instance.new("UICorner")
+		cc.CornerRadius = UDim.new(0, 4)
+		cc.Parent = cBox
+
+		cBox.MouseButton1Click:Connect(function()
+			mudarCorCallback(cor)
+			colorBtn.BackgroundColor3 = cor
+			colorPalette.Visible = false
+		end)
+	end
+
+	colorBtn.MouseButton1Click:Connect(function()
+		colorPalette.Visible = not colorPalette.Visible
+	end)
+
+	local ativo = false
+	btn.MouseButton1Click:Connect(function()
+		ativo = not ativo
+		callbackToggle(ativo)
+		if ativo then
+			btn.Text = "  " .. nomeTexto .. ": ON"
+			btn.TextColor3 = Color3.fromRGB(255,255,255)
+			s1.Color = Color3.fromRGB(220,35,50)
+			TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(50,25,30)}):Play()
+		else
+			btn.Text = "  " .. nomeTexto .. ": OFF"
+			btn.TextColor3 = Color3.fromRGB(180,180,185)
+			s1.Color = Color3.fromRGB(60,60,65)
+			TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(28,28,34)}):Play()
+			colorPalette.Visible = false
+		end
+	end)
+end
+
+local function criarToggle(posY, nomeTexto, callbackToggle)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, -30, 0, 26)
+	btn.Position = UDim2.fromOffset(15, posY)
+	btn.BackgroundColor3 = Color3.fromRGB(28,28,34)
+	btn.BorderSizePixel = 0
+	btn.Text = "  " .. nomeTexto .. ": OFF"
+	btn.TextColor3 = Color3.fromRGB(180,180,185)
+	btn.TextSize = 9
+	btn.Font = Enum.Font.GothamBold
+	btn.TextXAlignment = Enum.TextXAlignment.Left
+	btn.ZIndex = 11
+	btn.Parent = frame
+
+	local c1 = Instance.new("UICorner")
+	c1.CornerRadius = UDim.new(0,6)
+	c1.Parent = btn
+
+	local s1 = Instance.new("UIStroke")
+	s1.Color = Color3.fromRGB(60,60,65)
+	s1.Thickness = 1
+	s1.Parent = btn
+
+	local ativo = false
+	btn.MouseButton1Click:Connect(function()
+		ativo = not ativo
+		callbackToggle(ativo)
+		if ativo then
+			btn.Text = "  " .. nomeTexto .. ": ON"
+			btn.TextColor3 = Color3.fromRGB(255,255,255)
+			s1.Color = Color3.fromRGB(220,35,50)
+			TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(50,25,30)}):Play()
+		else
+			btn.Text = "  " .. nomeTexto .. ": OFF"
+			btn.TextColor3 = Color3.fromRGB(180,180,185)
+			s1.Color = Color3.fromRGB(60,60,65)
+			TweenService:Create(btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(28,28,34)}):Play()
+		end
+	end)
+end
+
+-- Criando os 5 Botões (Box, Esplinha e Esqueleto com paleta de cores)
+criarToggleComCor(45, "BOX", function(estado) boxEnabled = estado end, function() return boxColor end, function(c) boxColor = c end)
+criarToggle(78, "VER PLAY 😈", function(estado) verPlayEnabled = estado end)
+criarToggleComCor(111, "ESPLINHA", function(estado) linhaEnabled = estado end, function() return linhaColor end, function(c) linhaColor = c end)
+criarToggleComCor(144, "ESQUELETO", function(estado) esqueletoEnabled = estado end, function() return esqueletoColor end, function(c) esqueletoColor = c end)
+criarToggle(177, "matar 😈", function(estado) matarEnabled = estado end)
+
+--==================================================
+-- CONTEÚDO INFERIOR
+--==================================================
+
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1,-30,0,20)
+status.Position = UDim2.fromOffset(15,210)
+status.BackgroundTransparency = 1
+status.Text = "●  Sistema conectado"
+status.TextColor3 = Color3.fromRGB(180,180,185)
+status.TextSize = 9
+status.Font = Enum.Font.GothamMedium
+status.TextXAlignment = Enum.TextXAlignment.Left
+status.ZIndex = 11
+status.Parent = frame
+
+local linhaDiv = Instance.new("Frame")
+linhaDiv.Size = UDim2.new(1,-30,0,1)
+linhaDiv.Position = UDim2.fromOffset(15,238)
+linhaDiv.BackgroundColor3 = Color3.fromRGB(75,75,80)
+linhaDiv.BorderSizePixel = 0
+linhaDiv.ZIndex = 11
+linhaDiv.Parent = frame
+
+local vermelho = Instance.new("Frame")
+vermelho.Size = UDim2.fromOffset(45,1)
+vermelho.Position = UDim2.fromOffset(15,238)
+vermelho.BackgroundColor3 = Color3.fromRGB(220,35,50)
+vermelho.BorderSizePixel = 0
+vermelho.ZIndex = 12
+vermelho.Parent = frame
+
+local footer = Instance.new("TextLabel")
+footer.Size = UDim2.new(1,-30,0,20)
+footer.Position = UDim2.fromOffset(15,248)
+footer.BackgroundTransparency = 1
+footer.Text = "DV  •  PREMIUM"
+footer.TextColor3 = Color3.fromRGB(110,110,115)
+footer.TextSize = 8
+footer.Font = Enum.Font.GothamMedium
+footer.TextXAlignment = Enum.TextXAlignment.Left
+footer.ZIndex = 11
+footer.Parent = frame
+
+--==================================================
+-- ABRIR / FECHAR
+--==================================================
+
+local aberto = false
+local tamanho = UDim2.fromOffset(215,285)
+
+local function abrir()
+	aberto = true
+	frame.Visible = true
+	frame.Size = UDim2.fromOffset(0,0)
+	TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = tamanho}):Play()
+end
+
+local function fechar()
+	aberto = false
+	local anim = TweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Size = UDim2.fromOffset(0,0)})
+	anim:Play()
+	anim.Completed:Connect(function()
+		if not aberto then
+			frame.Visible = false
+			frame.Size = tamanho
+		end
+	end)
+end
+
+--==================================================
+-- SISTEMA DE ESP E HITBOX
+--==================================================
+
+local espCache = {}
+
+local function removeESP(p)
+	if espCache[p] then
+		if espCache[p].box then espCache[p].box:Destroy() end
+		if espCache[p].line then espCache[p].line:Remove() end
+		if espCache[p].verPlayPart then espCache[p].verPlayPart:Destroy() end
+		if espCache[p].skeletonLines then
+			for _, l in pairs(espCache[p].skeletonLines) do
+				l:Remove()
+			end
+		end
+		espCache[p] = nil
+	end
+end
+
+local function setupPlayer(p)
+	if p == player then return end
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Name = "DV_ESP"
+	billboard.Size = UDim2.new(4, 0, 5, 0)
+	billboard.AlwaysOnTop = true
+	billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+	local boxFrame = Instance.new("Frame")
+	boxFrame.Size = UDim2.new(1, 0, 1, 0)
+	boxFrame.BackgroundTransparency = 1
+	boxFrame.Parent = billboard
+
+	local boxStroke = Instance.new("UIStroke")
+	boxStroke.Color = boxColor
+	boxStroke.Thickness = 1.5
+	boxStroke.Parent = boxFrame
+
+	local tracerLine
+	local skelLines = {}
+	if Drawing then
+		tracerLine = Drawing.new("Line")
+		tracerLine.Visible = false
+		tracerLine.Thickness = 1.5
+		tracerLine.Transparency = 1
+
+		for i = 1, 8 do
+			local l = Drawing.new("Line")
+			l.Visible = false
+			l.Thickness = 1.2
+			l.Transparency = 1
+			table.insert(skelLines, l)
+		end
+	end
+
+	espCache[p] = {
+		box = billboard,
+		stroke = boxStroke,
+		line = tracerLine,
+		skeletonLines = skelLines,
+		verPlayPart = nil
+	}
+
+	p.CharacterAdded:Connect(function(char)
+		billboard.Adornee = char:WaitForChild("HumanoidRootPart", 5)
+		billboard.Parent = char
+	end)
+
+	if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+		billboard.Adornee = p.Character.HumanoidRootPart
+		billboard.Parent = p.Character
+	end
+end
+
+for _, p in ipairs(Players:GetPlayers()) do
+	setupPlayer(p)
+end
+
+Players.PlayerAdded:Connect(setupPlayer)
+Players.PlayerRemoving:Connect(removeESP)
+
+RunService.RenderStepped:Connect(function()
+	local camera = workspace.CurrentCamera
+	for p, data in pairs(espCache) do
+		local char = p.Character
+		local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+		local rootPart = char and char:FindFirstChild("HumanoidRootPart")
+		local head = char and char:FindFirstChild("Head")
+
+		if char and humanoid and rootPart and humanoid.Health > 0 then
+			-- Box ESP
+			if boxEnabled then
+				data.box.Enabled = true
+				data.stroke.Transparency = 0
+				data.stroke.Color = boxColor
+			else
+				data.box.Enabled = false
+			end
+
+			-- Matar 😈
+			if head then
+				if matarEnabled then
+					head.Size = Vector3.new(6, 6, 6)
+					head.Transparency = 0.7
+					head.CanCollide = false
+				else
+					head.Size = Vector3.new(2, 1, 1)
+					head.Transparency = 0
+					head.CanCollide = true
+				end
+			end
+
+			-- Ver Play 😈
+			if verPlayEnabled then
+				if not data.verPlayPart or not data.verPlayPart.Parent then
+					local part = Instance.new("Part")
+					part.Name = "DV_VerPlay"
+					part.Size = Vector3.new(1.5, 80, 1.5)
+					part.CFrame = rootPart.CFrame * CFrame.new(0, 40, 0)
+					part.Transparency = 0.4
+					part.BrickColor = BrickColor.new("Really red")
+					part.Material = Enum.Material.Neon
+					part.CanCollide = false
+					part.Massless = true
+
+					local weld = Instance.new("WeldConstraint")
+					weld.Part0 = rootPart
+					weld.Part1 = part
+					weld.Parent = part
+
+					part.Parent = char
+					data.verPlayPart = part
+				end
+			else
+				if data.verPlayPart then
+					data.verPlayPart:Destroy()
+					data.verPlayPart = nil
+				end
+			end
+
+			-- Esplinha (Tracer)
+			if linhaEnabled and data.line then
+				local vector, onScreen = camera:WorldToViewportPoint(rootPart.Position)
+				if onScreen then
+					data.line.Color = linhaColor
+					data.line.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y)
+					data.line.To = Vector2.new(vector.X, vector.Y)
+					data.line.Visible = true
+				else
+					data.line.Visible = false
+				end
+			elseif data.line then
+				data.line.Visible = false
+			end
+
+			-- Esqueleto ESP
+			if esqueletoEnabled and data.skeletonLines then
+				local upperTorso = char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso")
+				local lowerTorso = char:FindFirstChild("LowerTorso") or upperTorso
+				local leftArm = char:FindFirstChild("LeftUpperArm") or char:FindFirstChild("Left Arm")
+				local rightArm = char:FindFirstChild("RightUpperArm") or char:FindFirstChild("Right Arm")
+				local leftLeg = char:FindFirstChild("LeftUpperLeg") or char:FindFirstChild("Left Leg")
+				local rightLeg = char:FindFirstChild("RightUpperLeg") or char:FindFirstChild("Right Leg")
+
+				local bones = {
+					{head, upperTorso},
+					{upperTorso, lowerTorso},
+					{upperTorso, leftArm},
+					{upperTorso, rightArm},
+					{lowerTorso, leftLeg},
+					{lowerTorso, rightLeg}
+				}
+
+				for i, bone in ipairs(bones) do
+					local lObj = data.skeletonLines[i]
+					if lObj and bone[1] and bone[2] then
+						local p1, on1 = camera:WorldToViewportPoint(bone[1].Position)
+						local p2, on2 = camera:WorldToViewportPoint(bone[2].Position)
+						if on1 or on2 then
+							lObj.Color = esqueletoColor
+							lObj.From = Vector2.new(p1.X, p1.Y)
+							lObj.To = Vector2.new(p2.X, p2.Y)
+							lObj.Visible = true
+						else
+							lObj.Visible = false
+						end
+					elseif lObj then
+						lObj.Visible = false
+					end
+				end
+			else
+				if data.skeletonLines then
+					for _, l in pairs(data.skeletonLines) do
+						l.Visible = false
+					end
+				end
+			end
+		else
+			data.box.Enabled = false
+			if data.verPlayPart then
+				data.verPlayPart:Destroy()
+				data.verPlayPart = nil
+			end
+			if data.line then data.line.Visible = false end
+			if data.skeletonLines then
+				for _, l in pairs(data.skeletonLines) do l.Visible = false end
+			end
+		end
+	end
+end)
+
+--==================================================
+-- BOTÃO: ARRASTAR + CLIQUE
+--==================================================
+
+local buttonDragging = false
+local buttonMoved = false
+local buttonStart
+local buttonStartPos
+
+button.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+		or input.UserInputType == Enum.UserInputType.Touch then
+		buttonDragging = true
+		buttonMoved = false
+		buttonStart = input.Position
+		buttonStartPos = button.Position
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if not buttonDragging then return end
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch then
+		local delta = input.Position - buttonStart
+		if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then
+			buttonMoved = true
+		end
+		button.Position = UDim2.new(
+			buttonStartPos.X.Scale,
+			buttonStartPos.X.Offset + delta.X,
+			buttonStartPos.Y.Scale,
+			buttonStartPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+		or input.UserInputType == Enum.UserInputType.Touch then
+		if buttonDragging and not buttonMoved then
+			if aberto then fechar() else abrir() end
+		end
+		buttonDragging = false
+	end
+end)
+
+--==================================================
+-- ARRASTAR O FRAME PRINCIPAL
+--==================================================
+
+local frameDragging = false
+local frameStart
+local frameStartPos
+
+header.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+		or input.UserInputType == Enum.UserInputType.Touch then
+		frameDragging = true
+		frameStart = input.Position
+		frameStartPos = frame.Position
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if not frameDragging then return end
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch then
+		local delta = input.Position - frameStart
+		frame.Position = UDim2.new(
+			frameStartPos.X.Scale,
+			frameStartPos.X.Offset + delta.X,
+			frameStartPos.Y.Scale,
+			frameStartPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+		or input.UserInputType == Enum.UserInputType.Touch then
+		frameDragging = false
+	end
+end)
+
+--==================================================
+-- EFEITOS DO BOTÃO VISUAL
+--==================================================
+
+button.MouseEnter:Connect(function()
+	TweenService:Create(button, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(65,28,34)}):Play()
+	TweenService:Create(bs, TweenInfo.new(0.15), {Color = Color3.fromRGB(240,45,60), Thickness = 2}):Play()
+end)
+
+button.MouseLeave:Connect(function()
+	TweenService:Create(button, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(25,25,30)}):Play()
+	TweenService:Create(bs, TweenInfo.new(0.15), {Color = Color3.fromRGB(210,35,50), Thickness = 1.5}):Play()
+end)
